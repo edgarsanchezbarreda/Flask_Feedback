@@ -1,0 +1,52 @@
+{% extends 'base.html'  %}
+
+{% block content %}
+
+<h1 class="display-1">Hello, {{user.first_name}}.</h1>
+
+<div class="container">
+    <p class="lead">Username: {{user.username}}</p>
+    <p class="lead">Email: {{user.email}}</p>
+    <p class="lead">Name: {{user.first_name}} {{user.last_name}}</p>
+</div>
+
+<div>
+    {% for post in feedback %}
+    <div class="card my-4">
+        <div class="card-body">
+            <h5 class="card-title text-info">
+                {{post.username}}
+                {% if session['username'] == post.username %}
+                <form style="display:inline;">
+                    <button class="btn btn-sm btn-info" formaction="/users/{{user.username}}/feedback/add"
+                        formmethod="GET">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </button>
+
+                    <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i>
+                    </button>
+                </form>
+                {% endif %}
+            </h5>
+            <p class="card-text">
+                {{post.content}}
+            </p>
+
+        </div>
+    </div>
+
+    {%  endfor %}
+</div>
+<div>
+
+    <form>
+        <button class="btn btn-sm btn-info" formaction="/users/{{user.username}}/feedback/add" formmethod="GET">
+            Add Feedback
+        </button>
+
+        <button class="btn btn-sm btn-danger" formaction="/users/{{user.username}}/delete" formmethod="POST">Delete
+            User</button>
+    </form>
+</div>
+
+{% endblock %}
