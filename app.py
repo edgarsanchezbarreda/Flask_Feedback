@@ -1,9 +1,11 @@
 from flask import Flask, render_template, redirect, session, flash
 from flask_debugtoolbar import DebugToolbarExtension
+from werkzeug.exceptions import Unauthorized
+
 from models import connect_db, db, User, Feedback
 from forms import AddFeedbackForm, LoginForm, UserForm, DeleteForm
-from sqlalchemy.exc import IntegrityError
-from werkzeug.exceptions import Unauthorized
+
+
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///feedback_db"
@@ -113,3 +115,30 @@ def feedback_add(username):
     return render_template('/feedback.html', user=user, form=form)
 
         
+@app.route('/feedback/<int:feedback_id>/update', methods=['GET', 'POST'])
+def feedback_update(feedback_id):
+    fb = Feedback.query.get(feedback_id)
+
+    if "username" not in session or fb.username != session['username']:
+        raise Unauthorized()
+
+    form = AddFeedbackForm(obj=fb)
+    
+    if form.validate_on_submit():
+        fb.title = form.title.data
+        fb.content = form.content.data
+
+        db.session.commit()
+
+        return redirect(f"/users/{fb.username}")
+
+    return render_template('feedback_edit.html', fb=fb, form=form)
+
+
+@app.route('/feedback/<int:feedback_id>/delete', methods=['POST'])
+def feedback_delete(feedback_id):
+    fb = Feedback.query.get(feedback_id)
+    user = fb.username
+    db.session.delete(fb)
+    db.session.commit()
+    return redirect(f"/users/{user}")

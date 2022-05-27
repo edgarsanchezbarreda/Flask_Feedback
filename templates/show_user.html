@@ -18,12 +18,12 @@
                 {{post.username}}
                 {% if session['username'] == post.username %}
                 <form style="display:inline;">
-                    <button class="btn btn-sm btn-info" formaction="/users/{{user.username}}/feedback/add"
-                        formmethod="GET">
+                    <button class="btn btn-sm btn-info" formmethod="GET" formaction="/feedback/{{post.id}}/update">
                         <i class="fa-solid fa-pen-to-square"></i>
                     </button>
 
-                    <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i>
+                    <button class="btn btn-sm btn-danger" formaction="/feedback/{{post.id}}/delete" formmethod="POST"><i
+                            class="fas fa-trash"></i>
                     </button>
                 </form>
                 {% endif %}
